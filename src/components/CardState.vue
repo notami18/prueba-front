@@ -31,7 +31,13 @@
       </div>
     </div>
     <div class="row">
-      <CardStatePublish v-for="(state, index) in dataState" :key="index" :state="state" ></CardStatePublish>
+      <CardStatePublish
+        v-for="(state, index) in dataState"
+        :key="index"
+        :index="index"
+        :state="state"
+        :reaction="state.reaction"
+      ></CardStatePublish>
     </div>
   </div>
 </template>
@@ -50,9 +56,10 @@ export default {
       placeholderState: "Escribe aqui tu estado",
       dataState: [],
       objectState: {
-        nameUser: "",
-        comment: "",
-        date: "",
+        nameUser: null,
+        comment: null,
+        date: null,
+        reaction: [],
       },
       user: [
         "Alberto Morales",
@@ -73,8 +80,8 @@ export default {
       this.placeholderState = "";
     },
 
-    getDataStorage(){
-      const items = JSON.parse(localStorage.getItem('states'));
+    getDataStorage() {
+      const items = JSON.parse(localStorage.getItem("states"));
       if (items) {
         this.dataState = [];
         this.dataState = items;
@@ -111,9 +118,10 @@ export default {
       this.showPublish = false;
       this.placeholderState = "Escribe aqui tu estado";
       this.objectState = {
-        nameUser: "",
-        comment: "",
-        date: "",
+        nameUser: null,
+        comment: null,
+        date: null,
+        reaction: [],
       };
     },
   },

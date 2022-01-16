@@ -14,17 +14,42 @@
                 />
               </div>
               <div class="col-10">
-                <label class="name-publish">{{getInfoData.nameUser}}</label>
-                <label class="date-publish">{{getInfoData.date}}</label>
+                <label class="name-publish">{{ getInfoData.nameUser }}</label>
+                <label class="date-publish">{{ getInfoData.date }}</label>
                 <p class="paragraph-publish text-justify text-wrap">
-                  {{getInfoData.comment}}
+                  {{ getInfoData.comment }}
                 </p>
+              </div>
+              <div class="col-12">
+                <label class="text-reaction-publish">{{
+                  getReaction.length > 0
+                    ? `${getReaction.length} Likes`
+                    : "No tienes likes"
+                }}</label>
               </div>
               <span class="line-publish"></span>
             </div>
             <div class="row col-12">
+              <div class="float">
+                <div v-if="clickReact">
+                  <span class="dropdow-emoji float-right">
+                    <span @click="dataReact('👍', getKey)"> 👍 </span>
+                    <span @click="dataReact('😊', getKey)"> 😊 </span>
+                    <span @click="dataReact('😍', getKey)"> 😍 </span>
+                    <span @click="dataReact('😢', getKey)"> 😢 </span>
+                    <span @click="dataReact('☹', getKey)"> ☹ </span>
+                    <span @click="dataReact('😕', getKey)"> 😕 </span>
+                  </span>
+                </div>
+              </div>
+              <!-- TODO: CA2.2 Las reacciones deben tener una pequeña miniatura del usuario que
+la realizó hasta un máximo de 3 usuarios.
+
+ -->
               <div class="col-6 d-flex justify-content-start">
-                <a class="text-decoration-none link-react-publish"
+                <a
+                  class="text-decoration-none link-react-publish"
+                  @click="clickReact = !clickReact"
                   >Reaccionar</a
                 >
               </div>
@@ -66,25 +91,41 @@
 <script>
 export default {
   name: "CardStatePublish",
-  props: ["state"],
+  props: ["state", "index", "reaction"],
   data() {
     return {
       showComment: false,
       cardComment: "",
+      clickReact: false,
     };
   },
-  mounted() {
-
-  },
+  mounted() {},
   methods: {
     comment() {
       this.cardComment = "card-conment-state";
       this.showComment = true;
     },
+
+    dataReact(data, id) {
+      const items = JSON.parse(localStorage.getItem("states"));
+      if (items) {
+        localStorage.removeItem("states");
+        items[id].reaction.push(data);
+        localStorage.setItem("states", JSON.stringify(items));
+
+        this.$props.reaction = items[id].reaction;
+      }
+    },
   },
   computed: {
     getInfoData() {
       return this.$props.state;
+    },
+    getKey() {
+      return this.$props.index;
+    },
+    getReaction() {
+      return this.$props.reaction;
     },
   },
 };
@@ -374,5 +415,56 @@ export default {
   line-height: 16px;
 
   color: #878787;
+}
+
+.dropdow-emoji {
+  /* Reaction */
+
+  /* Auto layout */
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+
+  position: relative;
+  width: 179px;
+  height: 27px;
+
+  /* Gris Comentarios */
+
+  background: #f6f6f4;
+  border-radius: 15px;
+
+  cursor: pointer;
+}
+
+.text-reaction-publish {
+  /* 13 Likes */
+
+  position: static;
+  // width: 46px;
+  height: 18px;
+  left: 60px;
+  top: 1px;
+
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 18px;
+  /* identical to box height */
+
+  /* Color Principal */
+
+  color: #d00170;
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 0px 10px;
 }
 </style>
