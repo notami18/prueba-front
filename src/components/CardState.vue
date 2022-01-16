@@ -3,9 +3,10 @@
     <div class="row">
       <div class="col-md-12">
         <div class="card-custom-event">
-          <form action="">
+          <form @submit.prevent="saveState(objectState)">
             <input
               @click="eventClick"
+              v-model="objectState.comment"
               type="text"
               class="form-control input-state-event shadow-none"
               :placeholder="placeholderState"
@@ -14,9 +15,14 @@
             <transition name="fade">
               <div v-if="showPublish">
                 <div class="text-center">
-                  <button type="submit" class="button-custom">
+                  <!-- <button type="submit" class="button-custom">
                     <span class="text-publish">Publicar</span>
-                  </button>
+                  </button> -->
+                  <input
+                    class="button-custom text-publish"
+                    type="submit"
+                    value="Publicar"
+                  />
                 </div>
               </div>
             </transition>
@@ -24,22 +30,91 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <CardStatePublish v-for="(state, index) in dataState" :key="index" :state="state" ></CardStatePublish>
+    </div>
   </div>
 </template>
 
 <script>
+import moment from "moment";
+import CardStatePublish from "@/components/CardStatePublish.vue";
 export default {
   name: "CardSatate",
+  components: {
+    CardStatePublish,
+  },
   data() {
     return {
       showPublish: false,
-      placeholderState: "Escribe aqui tu estado"
+      placeholderState: "Escribe aqui tu estado",
+      dataState: [],
+      objectState: {
+        nameUser: "",
+        comment: "",
+        date: "",
+      },
+      user: [
+        "Alberto Morales",
+        "Robinson Zapata Moya",
+        "Josefina Perez",
+        "Andres Cordoba Mosquera",
+        "Julia Martinez",
+        "Carolina Bustamante J",
+      ],
     };
+  },
+  mounted() {
+    this.getDataStorage();
   },
   methods: {
     eventClick(e) {
       this.showPublish = true;
       this.placeholderState = "";
+    },
+
+    getDataStorage(){
+      const items = JSON.parse(localStorage.getItem('states'));
+      if (items) {
+        this.dataState = [];
+        this.dataState = items;
+      }
+    },
+
+    async saveState(data) {
+      var currDate = moment.now();
+      // var dateToTest = moment(currDate);
+      // if dateToTest will always be in past, use currDate as the base to diff, else
+      // be prepared to handle the negative outcomes.
+      // var result = currDate.diff(dateToTest._i, "days");
+      const horaPublicacion = moment(currDate.toString(), "x").format(
+        "DD/MM/yyyy hh:mm:ss"
+      );
+
+      data.date = horaPublicacion;
+      data.nameUser = await this.user[this.random()];
+
+      this.dataState.push(data);
+
+      console.log(this.dataState);
+
+      await localStorage.setItem("states", JSON.stringify(this.dataState));
+
+      this.clearPublishState();
+    },
+
+    random() {
+      return Math.floor(Math.random() * this.user.length);
+    },
+
+    clearPublishState() {
+      this.showPublish = false;
+      this.placeholderState = "Escribe aqui tu estado";
+      this.objectState = {
+        nameUser: "",
+        comment: "",
+        date: "",
+      };
     },
   },
 };
@@ -112,11 +187,6 @@ export default {
 }
 
 .button-custom {
-  /* Boton */
-
-  /* Auto layout */
-
-  //   display: flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 5px 15px;
@@ -178,12 +248,12 @@ export default {
   background: #fff;
   overflow: hidden;
 
-  transition: all .5s ease-in-out;
+  transition: all 0.5s ease-in-out;
   line-height: 0;
   padding: 0 1em;
   color: transparent;
 }
- 
+
 .expandable:target {
   line-height: 1.5;
   padding-top: 1em;

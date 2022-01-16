@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="nav-custom">
+    <div class="nav-custom fixed-top">
       <div class="container">
         <div class="row">
           <div class="col-10 justify-content-center text-center">
@@ -55,5 +55,4 @@ export default {
   flex-grow: 0;
   margin: 0px 30px;
 }
-
 </style>
