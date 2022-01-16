@@ -64,14 +64,6 @@ export default {
         reaction: [],
         commentsOnState: []
       },
-      // user: [
-      //   "Alberto Morales",
-      //   "Robinson Zapata Moya",
-      //   "Josefina Perez",
-      //   "Andres Cordoba Mosquera",
-      //   "Julia Martinez",
-      //   "Carolina Bustamante J",
-      // ],
     };
   },
   mounted() {
@@ -133,31 +125,15 @@ export default {
 <style lang="scss" scoped>
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap");
 .card-custom-event {
-  /* Card Estado */
-
-  /* Auto layout */
-
-  //   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 20px;
 
-  //   position: static;
-  //   width: 374px;
-  //   height: 119px;
-  //   left: 20px;
-  //   top: 20px;
-
-  /* Blanco */
-
   background: #ffffff;
-  /* Jo */
 
   box-shadow: 0px 8px 16px rgba(110, 120, 130, 0.12);
   border-radius: 15px;
-
-  /* Inside auto layout */
 
   flex: none;
   order: 0;

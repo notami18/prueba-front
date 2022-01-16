@@ -14,17 +14,23 @@
                 />
               </div>
               <div class="col-10">
-                <label class="name-publish">{{ getInfoData.nameUser }}</label>
-                <label class="date-publish">{{ getInfoData.date }}</label>
+                <label class="name-publish">{{
+                  getInfoData ? getInfoData.nameUser : ""
+                }}</label>
+                <label class="date-publish">{{
+                  getInfoData ? getInfoData.date : ""
+                }}</label>
                 <p class="paragraph-publish text-justify text-wrap">
-                  {{ getInfoData.comment }}
+                  {{ getInfoData ? getInfoData.comment : "" }}
                 </p>
               </div>
               <div class="col-6">
                 <label class="text-reaction-publish">{{
-                  getReaction.length > 0
-                    ? `${getReaction.length} Likes`
-                    : "No tienes likes"
+                  getReaction
+                    ? getReaction.length > 0
+                      ? `${getReaction.length} Likes`
+                      : "No tienes likes"
+                    : ""
                 }}</label>
               </div>
               <div class="col-6 col-6 d-flex justify-content-end">
@@ -32,8 +38,10 @@
                   class="text-comment-state text-decoration-none"
                   @click="viewComments"
                   >{{
-                    getCommentOnState.length > 0
-                      ? `${getCommentOnState.length} Comentarios`
+                    getCommentOnState
+                      ? getCommentOnState.length > 0
+                        ? `${getCommentOnState.length} Comentarios`
+                        : ""
                       : ""
                   }}</a
                 >
@@ -145,7 +153,6 @@ export default {
         commentState: null,
         date: null,
       },
-      dataComment: [],
       showAllComments: false,
     };
   },
@@ -184,7 +191,6 @@ export default {
         await localStorage.setItem("states", JSON.stringify(items));
 
         this.$props.commentsOnState = items[id].commentsOnState;
-        this.dataComment = items[id].commentsOnState;
         this.clearPublishCoomentState();
       }
     },
