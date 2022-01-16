@@ -20,12 +20,23 @@
                   {{ getInfoData.comment }}
                 </p>
               </div>
-              <div class="col-12">
+              <div class="col-6">
                 <label class="text-reaction-publish">{{
                   getReaction.length > 0
                     ? `${getReaction.length} Likes`
                     : "No tienes likes"
                 }}</label>
+              </div>
+              <div class="col-6 col-6 d-flex justify-content-end">
+                <a
+                  class="text-comment-state text-decoration-none"
+                  @click="viewComments"
+                  >{{
+                    getCommentOnState.length > 0
+                      ? `${getCommentOnState.length} Comentarios`
+                      : ""
+                  }}</a
+                >
               </div>
               <span class="line-publish"></span>
             </div>
@@ -63,22 +74,52 @@ la realizó hasta un máximo de 3 usuarios.
             </div>
           </div>
           <div v-if="showComment">
-            <div class="row">
-              <div class="col-12">
-                <form action="">
-                  <!-- TODO: Organizar el input textdel comentario -->
-                  <input
-                    type="text"
-                    class="form-control input-conment-publish shadow-none text-input-conment-publish"
-                    placeholder="Escribe un comentario"
-                    maxlength="255"
+            <div class="container">
+              <div class="row">
+                <div class="col-12">
+                  <form @submit.prevent="saveCommentState(objComment, getKey)">
+                    <!-- TODO: Organizar el input text del comentario -->
+                    <input
+                      type="text"
+                      class="form-control input-conment-publish shadow-none text-input-conment-publish"
+                      placeholder="Escribe un comentario"
+                      maxlength="255"
+                      v-model="objComment.commentState"
+                    />
+                    <div class="text-center">
+                      <button type="submit" class="button-conment-publish">
+                        <span class="text-button-conment-publish"
+                          >Publicar</span
+                        >
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="showAllComments">
+            <div class="container">
+              <div
+                class="row mt-1"
+                v-for="(item, index) in getCommentOnState"
+                :key="index"
+              >
+                <div class="col-2">
+                  <img
+                    class="user-publish rounded-circle"
+                    src="../assets/user-publish.svg"
+                    alt=""
+                    srcset=""
                   />
-                  <div class="text-center">
-                    <button type="submit" class="button-conment-publish">
-                      <span class="text-button-conment-publish">Publicar</span>
-                    </button>
-                  </div>
-                </form>
+                </div>
+                <div class="col-10">
+                  <label class="name-publish">{{ item.nameUserstate }}</label>
+                  <label class="date-publish">{{ item.date }}</label>
+                  <p class="paragraph-publish text-justify text-wrap">
+                    {{ item.commentState }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -89,21 +130,30 @@ la realizó hasta un máximo de 3 usuarios.
 </template>
 
 <script>
+import users from "../data/users";
+import moment from "moment";
 export default {
   name: "CardStatePublish",
-  props: ["state", "index", "reaction"],
+  props: ["state", "index", "reaction", "commentsOnState"],
   data() {
     return {
       showComment: false,
       cardComment: "",
       clickReact: false,
+      objComment: {
+        nameUserstate: null,
+        commentState: null,
+        date: null,
+      },
+      dataComment: [],
+      showAllComments: false,
     };
   },
-  mounted() {},
   methods: {
     comment() {
-      this.cardComment = "card-conment-state";
-      this.showComment = true;
+      this.showAllComments = false;
+      this.showComment = !this.showComment;
+      this.cardComment = this.showComment ? "card-conment-state" : "";
     },
 
     dataReact(data, id) {
@@ -116,6 +166,48 @@ export default {
         this.$props.reaction = items[id].reaction;
       }
     },
+
+    async saveCommentState(data, id) {
+      const currDate = moment.now();
+      const horaPublicacion = moment(currDate.toString(), "x").format(
+        "DD/MM/yyyy hh:mm:ss"
+      );
+
+      data.date = horaPublicacion;
+      data.nameUserstate = await users[this.random()];
+
+      const items = JSON.parse(localStorage.getItem("states"));
+
+      if (items) {
+        localStorage.removeItem("states");
+        items[id].commentsOnState.push(data);
+        await localStorage.setItem("states", JSON.stringify(items));
+
+        this.$props.commentsOnState = items[id].commentsOnState;
+        this.dataComment = items[id].commentsOnState;
+        this.clearPublishCoomentState();
+      }
+    },
+
+    viewComments() {
+      this.showComment = false;
+      this.showAllComments = !this.showAllComments;
+      this.cardComment = this.showAllComments ? "card-comment-state" : "";
+    },
+
+    random() {
+      return Math.floor(Math.random() * users.length);
+    },
+
+    clearPublishCoomentState() {
+      this.showComment = false;
+      this.cardComment = "";
+      this.objComment = {
+        nameUserstate: null,
+        commentState: null,
+        date: null,
+      };
+    },
   },
   computed: {
     getInfoData() {
@@ -127,6 +219,9 @@ export default {
     getReaction() {
       return this.$props.reaction;
     },
+    getCommentOnState() {
+      return this.$props.commentsOnState;
+    },
   },
 };
 </script>
@@ -135,7 +230,7 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap");
 .card-custom-state-publish {
-  display: flex;
+  // display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 20px;
@@ -149,20 +244,17 @@ export default {
   box-shadow: 0px 8px 16px rgba(110, 120, 130, 0.12);
   border-radius: 15px;
 
-  /* Inside auto layout */
-
   flex: none;
   order: 0;
   align-self: stretch;
   flex-grow: 0;
-  // margin: 0px 0px;
 }
 
 .line-publish {
-  position: static;
-  height: 0px;
-  left: 20px;
-  top: 168px;
+  // position: static;
+  // height: 0px;
+  // left: 20px;
+  // top: 168px;
 
   border: 1px solid #f4f4f4;
 
@@ -418,10 +510,6 @@ export default {
 }
 
 .dropdow-emoji {
-  /* Reaction */
-
-  /* Auto layout */
-
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -432,8 +520,6 @@ export default {
   width: 179px;
   height: 27px;
 
-  /* Gris Comentarios */
-
   background: #f6f6f4;
   border-radius: 15px;
 
@@ -441,8 +527,6 @@ export default {
 }
 
 .text-reaction-publish {
-  /* 13 Likes */
-
   position: static;
   // width: 46px;
   height: 18px;
@@ -454,17 +538,57 @@ export default {
   font-weight: bold;
   font-size: 12px;
   line-height: 18px;
-  /* identical to box height */
-
-  /* Color Principal */
 
   color: #d00170;
-
-  /* Inside auto layout */
 
   flex: none;
   order: 1;
   flex-grow: 0;
   margin: 0px 10px;
+}
+
+.text-comment-state {
+  // position: static;
+  width: 90px;
+  height: 16px;
+  left: 234px;
+  top: 8px;
+
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+
+  color: #d00170;
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 0px 10px;
+
+  cursor: pointer;
+}
+
+.card-comment-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+
+  // position: absolute;
+  // width: 484px;
+  height: 412px;
+  left: 20px;
+  // top: 381px;
+
+  /* Fondo */
+
+  background: #f4f4f4;
+  border-radius: 15px;
+}
+
+.form-control:focus {
+  border-color: #d00170;
 }
 </style>

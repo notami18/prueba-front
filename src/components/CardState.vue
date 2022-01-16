@@ -37,6 +37,7 @@
         :index="index"
         :state="state"
         :reaction="state.reaction"
+        :commentsOnState="state.commentsOnState"
       ></CardStatePublish>
     </div>
   </div>
@@ -45,6 +46,7 @@
 <script>
 import moment from "moment";
 import CardStatePublish from "@/components/CardStatePublish.vue";
+import users from "../data/users";
 export default {
   name: "CardSatate",
   components: {
@@ -60,15 +62,16 @@ export default {
         comment: null,
         date: null,
         reaction: [],
+        commentsOnState: []
       },
-      user: [
-        "Alberto Morales",
-        "Robinson Zapata Moya",
-        "Josefina Perez",
-        "Andres Cordoba Mosquera",
-        "Julia Martinez",
-        "Carolina Bustamante J",
-      ],
+      // user: [
+      //   "Alberto Morales",
+      //   "Robinson Zapata Moya",
+      //   "Josefina Perez",
+      //   "Andres Cordoba Mosquera",
+      //   "Julia Martinez",
+      //   "Carolina Bustamante J",
+      // ],
     };
   },
   mounted() {
@@ -89,7 +92,7 @@ export default {
     },
 
     async saveState(data) {
-      var currDate = moment.now();
+      const currDate = moment.now();
       // var dateToTest = moment(currDate);
       // if dateToTest will always be in past, use currDate as the base to diff, else
       // be prepared to handle the negative outcomes.
@@ -99,11 +102,9 @@ export default {
       );
 
       data.date = horaPublicacion;
-      data.nameUser = await this.user[this.random()];
+      data.nameUser = await users[this.random()];
 
       this.dataState.push(data);
-
-      console.log(this.dataState);
 
       await localStorage.setItem("states", JSON.stringify(this.dataState));
 
@@ -111,7 +112,7 @@ export default {
     },
 
     random() {
-      return Math.floor(Math.random() * this.user.length);
+      return Math.floor(Math.random() * users.length);
     },
 
     clearPublishState() {
@@ -122,6 +123,7 @@ export default {
         comment: null,
         date: null,
         reaction: [],
+        commentsOnState: []
       };
     },
   },
