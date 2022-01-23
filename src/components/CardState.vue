@@ -15,9 +15,6 @@
             <transition name="fade">
               <div v-if="showPublish">
                 <div class="text-center">
-                  <!-- <button type="submit" class="button-custom">
-                    <span class="text-publish">Publicar</span>
-                  </button> -->
                   <input
                     class="button-custom text-publish"
                     type="submit"
@@ -38,13 +35,13 @@
         :state="state"
         :reaction="state.reaction"
         :commentsOnState="state.commentsOnState"
+        v-on:getDataStorage="getDataStorage"
       ></CardStatePublish>
     </div>
   </div>
 </template>
 
 <script>
-import moment from "moment";
 import CardStatePublish from "@/components/CardStatePublish.vue";
 import users from "../data/users";
 export default {
@@ -59,10 +56,11 @@ export default {
       dataState: [],
       objectState: {
         nameUser: null,
+        imageUser: null,
         comment: null,
         date: null,
         reaction: [],
-        commentsOnState: []
+        commentsOnState: [],
       },
     };
   },
@@ -76,7 +74,7 @@ export default {
     },
 
     getDataStorage() {
-      const items = JSON.parse(localStorage.getItem("states"));
+      const items = this.checkDataLocalStorage();
       if (items) {
         this.dataState = [];
         this.dataState = items;
@@ -84,27 +82,17 @@ export default {
     },
 
     async saveState(data) {
-      const currDate = moment.now();
-      // var dateToTest = moment(currDate);
-      // if dateToTest will always be in past, use currDate as the base to diff, else
-      // be prepared to handle the negative outcomes.
-      // var result = currDate.diff(dateToTest._i, "days");
-      const horaPublicacion = moment(currDate.toString(), "x").format(
-        "DD/MM/yyyy hh:mm:ss"
-      );
-
-      data.date = horaPublicacion;
-      data.nameUser = await users[this.random()];
-
+      const publishDate = this.getCurrentDate();
+      const { name, image } = this.randomUser();
+      
+      data.date = publishDate;
+      data.nameUser = name;
+      data.imageUser = image;
+      debugger;
       this.dataState.push(data);
-
-      await localStorage.setItem("states", JSON.stringify(this.dataState));
-
+      await this.addUpdateDataLocalStorage(this.dataState);
       this.clearPublishState();
-    },
-
-    random() {
-      return Math.floor(Math.random() * users.length);
+      this.getDataStorage();
     },
 
     clearPublishState() {
@@ -112,10 +100,11 @@ export default {
       this.placeholderState = "Escribe aqui tu estado";
       this.objectState = {
         nameUser: null,
+        imageUser: null,
         comment: null,
         date: null,
         reaction: [],
-        commentsOnState: []
+        commentsOnState: [],
       };
     },
   },

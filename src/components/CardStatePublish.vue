@@ -8,7 +8,7 @@
               <div class="col-2">
                 <img
                   class="user-publish rounded-circle"
-                  src="../assets/user-publish.svg"
+                  :src="getInfoData.imageUser"
                   alt=""
                   srcset=""
                 />
@@ -18,7 +18,7 @@
                   getInfoData ? getInfoData.nameUser : ""
                 }}</label>
                 <label class="date-publish">{{
-                  getInfoData ? getInfoData.date : ""
+                  getDateFormate() ? getDateFormate(getInfoData.date) : ""
                 }}</label>
                 <p class="paragraph-publish text-justify text-wrap">
                   {{ getInfoData ? getInfoData.comment : "" }}
@@ -123,7 +123,9 @@ la realizó hasta un máximo de 3 usuarios.
                 </div>
                 <div class="col-10">
                   <label class="name-publish">{{ item.nameUserstate }}</label>
-                  <label class="date-publish">{{ item.date }}</label>
+                  <label class="date-publish">{{
+                    getDateFormate() ? getDateFormate(item.date) : ""
+                  }}</label>
                   <p class="paragraph-publish text-justify text-wrap">
                     {{ item.commentState }}
                   </p>
@@ -138,8 +140,6 @@ la realizó hasta un máximo de 3 usuarios.
 </template>
 
 <script>
-import users from "../data/users";
-import moment from "moment";
 export default {
   name: "CardStatePublish",
   props: ["state", "index", "reaction", "commentsOnState"],
@@ -156,6 +156,7 @@ export default {
       showAllComments: false,
     };
   },
+  mounted() {},
   methods: {
     comment() {
       this.showAllComments = false;
@@ -164,33 +165,29 @@ export default {
     },
 
     dataReact(data, id) {
-      const items = JSON.parse(localStorage.getItem("states"));
-      if (items) {
-        localStorage.removeItem("states");
-        items[id].reaction.push(data);
-        localStorage.setItem("states", JSON.stringify(items));
+      const states = this.checkDataLocalStorage();
+      if (states) {
+        states[id].reaction.push(data);
+        this.addUpdateDataLocalStorage(states);
 
-        this.$props.reaction = items[id].reaction;
+        this.$emit("getDataStorage");
       }
     },
 
     async saveCommentState(data, id) {
-      const currDate = moment.now();
-      const horaPublicacion = moment(currDate.toString(), "x").format(
-        "DD/MM/yyyy hh:mm:ss"
-      );
+      const publishDate = this.getCurrentDate();
 
-      data.date = horaPublicacion;
-      data.nameUserstate = await users[this.random()];
+      data.date = publishDate;
+      const { name } = this.randomUser();
+      data.nameUserstate = name;
 
-      const items = JSON.parse(localStorage.getItem("states"));
+      const states = this.checkDataLocalStorage();
 
-      if (items) {
-        localStorage.removeItem("states");
-        items[id].commentsOnState.push(data);
-        await localStorage.setItem("states", JSON.stringify(items));
+      if (states) {
+        states[id].commentsOnState.push(data);
+        this.addUpdateDataLocalStorage(states);
 
-        this.$props.commentsOnState = items[id].commentsOnState;
+        this.$emit("getDataStorage");
         this.clearPublishCoomentState();
       }
     },
@@ -199,10 +196,6 @@ export default {
       this.showComment = false;
       this.showAllComments = !this.showAllComments;
       this.cardComment = this.showAllComments ? "card-comment-state" : "";
-    },
-
-    random() {
-      return Math.floor(Math.random() * users.length);
     },
 
     clearPublishCoomentState() {
@@ -215,6 +208,7 @@ export default {
       };
     },
   },
+
   computed: {
     getInfoData() {
       return this.$props.state;

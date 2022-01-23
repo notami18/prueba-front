@@ -3,16 +3,25 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import {
+    BootstrapVue,
+    IconsPlugin
+} from 'bootstrap-vue'
 
-// Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-// Make BootstrapVue available throughout your project
+// Mixins
+import usersMixin from '@/mixins/randomUser';
+import localStorageMixin from '@/mixins/localStorage';
+import globalMixin from '@/mixins/global'
+
 Vue.use(BootstrapVue)
-    // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
+
+Vue.mixin(usersMixin)
+Vue.mixin(localStorageMixin)
+Vue.mixin(globalMixin)
 
 Vue.config.productionTip = false
 
