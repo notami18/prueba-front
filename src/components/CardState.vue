@@ -33,7 +33,7 @@
         :key="index"
         :index="index"
         :state="state"
-        :reaction="state.reaction"
+        :reaction="state.reactionData"
         :commentsOnState="state.commentsOnState"
         v-on:getDataStorage="getDataStorage"
       ></CardStatePublish>
@@ -59,7 +59,7 @@ export default {
         imageUser: null,
         comment: null,
         date: null,
-        reaction: [],
+        reactionData: [],
         commentsOnState: [],
       },
     };
@@ -88,7 +88,7 @@ export default {
       data.date = publishDate;
       data.nameUser = name;
       data.imageUser = image;
-      debugger;
+
       this.dataState.push(data);
       await this.addUpdateDataLocalStorage(this.dataState);
       this.clearPublishState();
@@ -103,7 +103,7 @@ export default {
         imageUser: null,
         comment: null,
         date: null,
-        reaction: [],
+        reactionData: [],
         commentsOnState: [],
       };
     },

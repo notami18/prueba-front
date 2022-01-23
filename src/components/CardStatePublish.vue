@@ -25,13 +25,24 @@
                 </p>
               </div>
               <div class="col-6">
-                <label class="text-reaction-publish">{{
-                  getReaction
-                    ? getReaction.length > 0
-                      ? `${getReaction.length} Likes`
-                      : "No tienes likes"
-                    : ""
-                }}</label>
+                <div class="avatar-group">
+                  <img
+                    v-for="(reaction, index) in getReaction.slice(0, 3)"
+                    :key="index"
+                    class="avatar-group avatar avatar-sm rounded-circle"
+                    :src="reaction.image"
+                    alt=""
+                    srcset=""
+                  />
+
+                  <label class="text-reaction-publish">
+                    {{
+                      getReaction.length > 0
+                        ? `${getReaction.length} Likes`
+                        : "No tienes likes"
+                    }}
+                  </label>
+                </div>
               </div>
               <div class="col-6 col-6 d-flex justify-content-end">
                 <a
@@ -61,10 +72,6 @@
                   </span>
                 </div>
               </div>
-              <!-- TODO: CA2.2 Las reacciones deben tener una pequeña miniatura del usuario que
-la realizó hasta un máximo de 3 usuarios.
-
- -->
               <div class="col-6 d-flex justify-content-start">
                 <a
                   class="text-decoration-none link-react-publish"
@@ -167,9 +174,16 @@ export default {
     dataReact(data, id) {
       const states = this.checkDataLocalStorage();
       if (states) {
-        states[id].reaction.push(data);
-        this.addUpdateDataLocalStorage(states);
+        let { image } = this.randomUser();
 
+        let userReaction = {
+          reaction: data,
+          image,
+        };
+
+        states[id].reactionData.push(userReaction);
+        this.addUpdateDataLocalStorage(states);
+        userReaction = {};
         this.$emit("getDataStorage");
       }
     },
@@ -395,13 +409,11 @@ export default {
 }
 
 .card-conment-state {
-  //   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 0px;
 
   position: static;
-  //   width: 374px;
   height: 343px;
   left: 20px;
   top: 116px;
@@ -409,13 +421,10 @@ export default {
   background: #f4f4f4;
   border-radius: 15px;
 
-  /* Inside auto layout */
-
   flex: none;
   order: 1;
   align-self: stretch;
   flex-grow: 0;
-  //  margin: 20px 0px;
 }
 
 .input-conment-publish {
@@ -425,15 +434,11 @@ export default {
   padding: 10px 20px;
 
   position: static;
-  // width: auto;
   height: 36px;
   left: 20px;
   top: calc(50% - 36px / 2 - 24px);
 
-  /* Blanco */
-
   background: #ffffff;
-  /* Fondo */
 
   border: 1px solid #f4f4f4;
   box-sizing: border-box;
@@ -590,5 +595,52 @@ export default {
 
 .form-control:focus {
   border-color: #d00170;
+}
+
+.avatar {
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  height: 20px;
+  width: 20px;
+
+  img {
+    width: 100%;
+  }
+
+  &.rounded-circle {
+    img {
+      @extend .rounded-circle;
+    }
+  }
+
+  + .avatar-content {
+    display: inline-block;
+    margin-left: 0.75rem;
+  }
+}
+
+.avatar-group {
+  .avatar {
+    position: relative;
+    z-index: 2;
+    border: 2px solid;
+
+    &:hover {
+      z-index: 3;
+    }
+  }
+
+  .avatar + .avatar {
+    margin-left: -1rem;
+  }
+}
+
+.avatar-sm {
+  width: 36px;
+  height: 36px;
+  font-size: 1rem * 0.875;
 }
 </style>
