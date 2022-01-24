@@ -60,24 +60,25 @@
               <span class="line-publish"></span>
             </div>
             <div class="row col-12">
-              <div class="float">
-                <div v-if="clickReact">
+              <div class="col-6 d-flex justify-content-start">
+                <a
+                  v-popover:foo.top
+                  class="text-decoration-none"
+                  :class="validLike"
+                  >{{ reactLike }}</a
+                >
+                <popover name="foo">
                   <span class="dropdow-emoji float-right">
-                    <span @click="dataReact('👍', getKey)"> 👍 </span>
+                    <span class="like-custom" @click="dataReact('👍', getKey)">
+                      👍
+                    </span>
                     <span @click="dataReact('😊', getKey)"> 😊 </span>
                     <span @click="dataReact('😍', getKey)"> 😍 </span>
                     <span @click="dataReact('😢', getKey)"> 😢 </span>
                     <span @click="dataReact('☹', getKey)"> ☹ </span>
                     <span @click="dataReact('😕', getKey)"> 😕 </span>
                   </span>
-                </div>
-              </div>
-              <div class="col-6 d-flex justify-content-start">
-                <a
-                  class="text-decoration-none link-react-publish"
-                  @click="clickReact = !clickReact"
-                  >Reaccionar</a
-                >
+                </popover>
               </div>
               <div class="col-6 d-flex justify-content-end">
                 <a
@@ -115,27 +116,29 @@
           </div>
           <div v-if="showAllComments">
             <div class="container">
-              <div
-                class="row mt-1"
-                v-for="(item, index) in getCommentOnState"
-                :key="index"
-              >
-                <div class="col-2">
-                  <img
-                    class="user-publish rounded-circle"
-                    src="../assets/user-publish.svg"
-                    alt=""
-                    srcset=""
-                  />
-                </div>
-                <div class="col-10">
-                  <label class="name-publish">{{ item.nameUserstate }}</label>
-                  <label class="date-publish">{{
-                    getDateFormate() ? getDateFormate(item.date) : ""
-                  }}</label>
-                  <p class="paragraph-publish text-justify text-wrap">
-                    {{ item.commentState }}
-                  </p>
+              <div class="container">
+                <div
+                  class="row mt-1"
+                  v-for="(item, index) in getCommentOnState"
+                  :key="index"
+                >
+                  <div class="col-2">
+                    <img
+                      class="user-publish rounded-circle"
+                      src="../assets/user-publish.svg"
+                      alt=""
+                      srcset=""
+                    />
+                  </div>
+                  <div class="col-10">
+                    <label class="name-publish">{{ item.nameUserstate }}</label>
+                    <p class="paragraph-publish text-justify text-wrap">
+                      {{ item.commentState }}
+                    </p>
+                    <label class="date-publish">{{
+                      getDateFormate() ? getDateFormate(item.date) : ""
+                    }}</label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -161,6 +164,8 @@ export default {
         date: null,
       },
       showAllComments: false,
+      reactLike: "Reaccionar",
+      validLike: "link-react-publish",
     };
   },
   mounted() {},
@@ -172,6 +177,11 @@ export default {
     },
 
     dataReact(data, id) {
+      if (data === "👍") {
+        this.reactLike = ` ${data} Me gusta`;
+        this.validLike = "text-reaction-publish like-custom";
+      }
+
       const states = this.checkDataLocalStorage();
       if (states) {
         let { image } = this.randomUser();
@@ -185,6 +195,8 @@ export default {
         this.addUpdateDataLocalStorage(states);
         userReaction = {};
         this.$emit("getDataStorage");
+
+        this.clickReact = false;
       }
     },
 
@@ -249,7 +261,9 @@ export default {
   align-items: flex-start;
   padding: 20px;
 
-  height: 219px;
+  height: auto;
+  min-height: 219px;
+  // height: 219px;
   left: 0px;
   top: 0px;
 
@@ -642,5 +656,10 @@ export default {
   width: 36px;
   height: 36px;
   font-size: 1rem * 0.875;
+}
+
+.like-custom {
+  color: transparent;
+  text-shadow: 0 0 0 #d00170;
 }
 </style>
