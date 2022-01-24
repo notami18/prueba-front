@@ -17,8 +17,6 @@
         "core-js": "^3.8.3",
         "moment": "^2.29.1",
         "vue": "^2.6.14",
-        "vue-feedback-reaction": "^1.2.0",
-        "vue-js-popover": "^1.2.1",
         "vue-router": "^3.5.1",
         "vuex": "^3.6.2"
     },

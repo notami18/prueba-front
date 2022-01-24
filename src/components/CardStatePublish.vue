@@ -5,26 +5,26 @@
         <div :class="cardComment">
           <div class="card-custom-state-publish">
             <div class="row">
-              <div class="col-2">
+              <div class="col-2 text-right">
                 <img
                   class="user-publish rounded-circle"
                   :src="getInfoData.imageUser"
-                  alt=""
-                  srcset=""
+                  alt="imagen usuario prncipal"
                 />
               </div>
               <div class="col-10">
                 <label class="name-publish">{{
                   getInfoData ? getInfoData.nameUser : ""
                 }}</label>
-                <label class="date-publish">{{
+                <br />
+                <span class="date-publish mt-3">{{
                   getDateFormate() ? getDateFormate(getInfoData.date) : ""
-                }}</label>
+                }}</span>
                 <p class="paragraph-publish text-justify text-wrap">
                   {{ getInfoData ? getInfoData.comment : "" }}
                 </p>
               </div>
-              <div class="col-6">
+              <div class="col-6 d-flex justify-content-start">
                 <div class="avatar-group">
                   <img
                     v-for="(reaction, index) in getReaction.slice(0, 3)"
@@ -44,7 +44,8 @@
                   </label>
                 </div>
               </div>
-              <div class="col-6 col-6 d-flex justify-content-end">
+
+              <div class="col-6 d-flex justify-content-end">
                 <a
                   class="text-comment-state text-decoration-none"
                   @click="viewComments"
@@ -57,28 +58,30 @@
                   }}</a
                 >
               </div>
+
               <span class="line-publish"></span>
             </div>
             <div class="row col-12">
+              <div v-if="clickReact">
+                <span class="dropdow-emoji float-right">
+                  <span class="like-custom" @click="dataReact('👍', getKey)">
+                    👍
+                  </span>
+                  <span @click="dataReact('😊', getKey)"> 😊 </span>
+                  <span @click="dataReact('😍', getKey)"> 😍 </span>
+                  <span @click="dataReact('😢', getKey)"> 😢 </span>
+                  <span @click="dataReact('☹', getKey)"> ☹ </span>
+                  <span @click="dataReact('😕', getKey)"> 😕 </span>
+                </span>
+              </div>
               <div class="col-6 d-flex justify-content-start">
                 <a
-                  v-popover:foo.top
+                  ref="anchorEl"
                   class="text-decoration-none"
                   :class="validLike"
+                  @click="clickReact = !clickReact"
                   >{{ reactLike }}</a
                 >
-                <popover name="foo">
-                  <span class="dropdow-emoji float-right">
-                    <span class="like-custom" @click="dataReact('👍', getKey)">
-                      👍
-                    </span>
-                    <span @click="dataReact('😊', getKey)"> 😊 </span>
-                    <span @click="dataReact('😍', getKey)"> 😍 </span>
-                    <span @click="dataReact('😢', getKey)"> 😢 </span>
-                    <span @click="dataReact('☹', getKey)"> ☹ </span>
-                    <span @click="dataReact('😕', getKey)"> 😕 </span>
-                  </span>
-                </popover>
               </div>
               <div class="col-6 d-flex justify-content-end">
                 <a
@@ -89,66 +92,72 @@
               </div>
             </div>
           </div>
-          <div v-if="showComment">
-            <div class="container">
-              <div class="row">
-                <div class="col-12">
-                  <form @submit.prevent="saveCommentState(objComment, getKey)">
-                    <!-- TODO: Organizar el input text del comentario -->
-                    <input
-                      type="text"
-                      class="form-control input-conment-publish shadow-none text-input-conment-publish"
-                      placeholder="Escribe un comentario"
-                      maxlength="255"
-                      v-model="objComment.commentState"
-                    />
-                    <div class="text-center">
-                      <button type="submit" class="button-conment-publish">
-                        <span class="text-button-conment-publish"
-                          >Publicar</span
-                        >
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-if="showAllComments">
-            <div class="container">
+          <transition name="slide">
+            <div v-if="showComment">
               <div class="container">
-                <div
-                  class="row mt-1"
-                  v-for="(item, index) in getCommentOnState"
-                  :key="index"
-                >
-                  <div class="col-2">
-                    <img
-                      class="user-publish rounded-circle"
-                      src="../assets/user-publish.svg"
-                      alt=""
-                      srcset=""
-                    />
-                  </div>
-                  <div class="col-10">
-                    <label class="name-publish">{{ item.nameUserstate }}</label>
-                    <p class="paragraph-publish text-justify text-wrap">
-                      {{ item.commentState }}
-                    </p>
-                    <label class="date-publish">{{
-                      getDateFormate() ? getDateFormate(item.date) : ""
-                    }}</label>
+                <div class="row">
+                  <div class="col-12">
+                    <form
+                      @submit.prevent="saveCommentState(objComment, getKey)"
+                    >
+                      <input
+                        type="text"
+                        class="form-control input-conment-publish shadow-none text-input-conment-publish"
+                        placeholder="Escribe un comentario"
+                        maxlength="255"
+                        v-model="objComment.commentState"
+                      />
+                      <div class="text-center">
+                        <button type="submit" class="button-conment-publish">
+                          <span class="text-button-conment-publish"
+                            >Publicar</span
+                          >
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </transition>
+          <transition name="slide">
+            <div v-if="showAllComments">
+              <div class="container">
+                <div class="container">
+                  <div
+                    class="row mt-3"
+                    v-for="(item, index) in getCommentOnState"
+                    :key="index"
+                  >
+                    <div class="col-2">
+                      <img
+                        class="user-publish rounded-circle"
+                        :src="item.imageUserstate"
+                        alt=""
+                        srcset=""
+                      />
+                    </div>
+                    <div class="col-10">
+                      <label class="name-publish">{{
+                        item.nameUserstate
+                      }}</label>
+                      <p class="paragraph-publish-state text-justify text-wrap">
+                        {{ item.commentState }}
+                      </p>
+                      <span class="date-publish">{{
+                        getDateFormate() ? getDateFormate(item.date) : ""
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 export default {
   name: "CardStatePublish",
@@ -160,6 +169,7 @@ export default {
       clickReact: false,
       objComment: {
         nameUserstate: null,
+        imageUserstate: null,
         commentState: null,
         date: null,
       },
@@ -190,7 +200,6 @@ export default {
           reaction: data,
           image,
         };
-
         states[id].reactionData.push(userReaction);
         this.addUpdateDataLocalStorage(states);
         userReaction = {};
@@ -204,8 +213,9 @@ export default {
       const publishDate = this.getCurrentDate();
 
       data.date = publishDate;
-      const { name } = this.randomUser();
+      const { name, image } = this.randomUser();
       data.nameUserstate = name;
+      data.imageUserstate = image;
 
       const states = this.checkDataLocalStorage();
 
@@ -229,6 +239,7 @@ export default {
       this.cardComment = "";
       this.objComment = {
         nameUserstate: null,
+        imageUserstate: null,
         commentState: null,
         date: null,
       };
@@ -262,7 +273,6 @@ export default {
   padding: 20px;
 
   height: auto;
-  min-height: 219px;
   // height: 219px;
   left: 0px;
   top: 0px;
@@ -276,6 +286,8 @@ export default {
   order: 0;
   align-self: stretch;
   flex-grow: 0;
+
+  transition: all 0.5s ease-out;
 }
 
 .line-publish {
@@ -315,11 +327,11 @@ export default {
 }
 
 .date-publish {
-  position: static;
+  // position: static;
   width: 286px;
   height: 16px;
   left: 0px;
-  top: 22px;
+  // top: 22px;
 
   font-family: Poppins;
   font-style: normal;
@@ -337,11 +349,11 @@ export default {
 }
 
 .paragraph-publish {
-  position: static;
+  // position: static;
   width: 286px;
-  height: 48px;
+  // height: 48px;
   left: 0px;
-  top: 38px;
+  // top: 38px;
 
   font-family: Poppins;
   font-style: normal;
@@ -353,6 +365,33 @@ export default {
 
   flex: none;
   order: 2;
+  align-self: stretch;
+  flex-grow: 0;
+  // margin: 0px 0px;
+}
+
+.paragraph-publish-state {
+  position: static;
+  width: 404px;
+  height: 17px;
+  left: 0px;
+  top: 14px;
+
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 140%;
+  /* identical to box height, or 17px */
+
+  /* Gris Texto */
+
+  color: #878787;
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 1;
   align-self: stretch;
   flex-grow: 0;
   margin: 0px 0px;
@@ -439,6 +478,8 @@ export default {
   order: 1;
   align-self: stretch;
   flex-grow: 0;
+
+  transition: all 0.5s ease-out;
 }
 
 .input-conment-publish {
@@ -584,7 +625,7 @@ export default {
   flex: none;
   order: 1;
   flex-grow: 0;
-  margin: 0px 10px;
+  // margin: 0px 10px;
 
   cursor: pointer;
 }
@@ -593,13 +634,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 0px;
+  // padding: 4px;
 
   // position: absolute;
   // width: 484px;
-  height: 412px;
+  height: auto;
   left: 20px;
-  // top: 381px;
+  top: 381px;
 
   /* Fondo */
 
@@ -661,5 +702,40 @@ export default {
 .like-custom {
   color: transparent;
   text-shadow: 0 0 0 #d00170;
+  cursor: pointer;
+}
+
+.slide-enter-active {
+  -moz-transition-duration: 0.3s;
+  -webkit-transition-duration: 0.3s;
+  -o-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -moz-transition-timing-function: ease-in;
+  -webkit-transition-timing-function: ease-in;
+  -o-transition-timing-function: ease-in;
+  transition-timing-function: ease-in;
+}
+
+.slide-leave-active {
+  -moz-transition-duration: 0.3s;
+  -webkit-transition-duration: 0.3s;
+  -o-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  -o-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+
+.slide-enter-to,
+.slide-leave {
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.slide-enter,
+.slide-leave-to {
+  overflow: hidden;
+  max-height: 0;
 }
 </style>

@@ -16,10 +16,6 @@ import usersMixin from '@/mixins/randomUser';
 import localStorageMixin from '@/mixins/localStorage';
 import globalMixin from '@/mixins/global'
 
-import Popover from 'vue-js-popover'
-
-Vue.use(Popover)
-
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
